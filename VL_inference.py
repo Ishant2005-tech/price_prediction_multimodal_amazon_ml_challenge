@@ -229,9 +229,7 @@ def main():
                 
                 # ðŸ”¥ CRITICAL FIX: Process with proper image format
                 # Filter out None images and structure properly
-                images_list = []
-                for img in batch_images:
-                    images_list.append([img] if img is not None else [])
+                 images_list = [img for img in batch_images if img is not None] 
                 
                 
                 if images_list:
@@ -267,7 +265,9 @@ def main():
                         use_cache=True
                     )
                 # After model.generate
-                actual_lengths = inputs.attention_mask.sum(dim=1).tolist()  # List of effective input lengths per sample
+                processor.tokenizer.padding_side = "right" 
+                actual_lengths = inputs.attention_mask.sum(dim=1).tolist()# List of effective input lengths per sample
+                
                 generated_ids = [outputs[i, actual_lengths[i]:] for i in range(outputs.shape[0])]
                 generated_texts = processor.batch_decode(generated_ids, skip_special_tokens=True)
                 # # Decode generated text
